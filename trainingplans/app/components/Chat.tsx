@@ -9,11 +9,12 @@ interface MessageInfo {
 interface ChatProps {
     messages: MessageInfo[];
     chatRoom: string;
-    sendMessage: (message: string) => void;
+    sendMessage: (message: string, chatRoom: string) => void;
     closeChat: () => void;
+    leaveChat: () => void;
 }
 
-export const Chat = ({ messages, chatRoom, sendMessage, closeChat }: ChatProps) => {
+export const Chat = ({ messages, chatRoom, sendMessage, closeChat, leaveChat }: ChatProps) => {
     const [message, setMessage] = useState("");
     const messagesEndRef = useRef<HTMLSpanElement>(null);
 
@@ -22,7 +23,7 @@ export const Chat = ({ messages, chatRoom, sendMessage, closeChat }: ChatProps) 
     }, [messages]);
 
     const onSendMessage = () => {
-        sendMessage(message);
+        sendMessage(message, chatRoom);
         setMessage("");
     };
 
@@ -30,7 +31,8 @@ export const Chat = ({ messages, chatRoom, sendMessage, closeChat }: ChatProps) 
         <div className="w-1/2 bg-white p-8 rounded shadow-lg">
             <div className="flex flex-row justify-between mb-5">
                 <span>{chatRoom}</span>
-                <button onClick={closeChat}>Закрыть</button>
+                <button onClick={closeChat}>Выйти из всех чатов</button>
+                <button onClick={leaveChat}>Покинуть чат</button>
             </div>
 
             <div className="flex flex-col overflow-auto scroll-smooth h-96 gap-3 pb-3">

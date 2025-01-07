@@ -43,15 +43,27 @@ const ChatPage = () => {
         }
     };
 
-    const sendMessage = (message: string) => {
-        connection?.invoke("Sendmessage", message);
+    const sendMessage = (message: string, chatRoom: string) => {
+        connection?.invoke("SendMessage", message, chatRoom);
     }
 
     const closeChat = async () => {
-        await connection?.stop();
-        setConnection(null);
-        setMessages([]); 
+        if (connection) {
+            await connection?.stop();
+            setConnection(null);
+            setMessages([]); 
+        }
     }
+
+    const leaveChat = async () => {
+        if (connection) {
+            await connection?.invoke("LeaveChat", chatRoom);  // вызов метода на сервере
+            setMessages([]);  // очищаем сообщения
+            setChatRoom("");  // сбрасываем текущий чат
+            //await connection.stop();  // остановить соединение
+            //setConnection(null);  // сбрасываем соединение
+        }
+    };
 
 
     return (
@@ -61,7 +73,8 @@ const ChatPage = () => {
                 messages={messages} 
                 chatRoom={chatRoom} 
                 sendMessage={sendMessage}
-                closeChat={closeChat}/>
+                closeChat={closeChat}
+                leaveChat={leaveChat}/>
             ) : (
                 <WaitingRoom joinChat={joinChat}/>
             )}

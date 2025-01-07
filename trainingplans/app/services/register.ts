@@ -2,10 +2,11 @@ export interface RegisterUserRequest {
     userName: string;
     password: string;
     email: string;
+    role: string;
 }
 
 export const register = async (registerUserRequest: RegisterUserRequest) => {
-    await fetch("https://localhost:7000/gateway/Users/register", {
+    await fetch("http://localhost:7000/gateway/Users/register", {
         method: "POST",
         headers: {
             "content-type": "application/json",

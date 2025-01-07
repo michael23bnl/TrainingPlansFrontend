@@ -22,26 +22,24 @@ export const LoginUser = ({
     };
 
     return (    
-        <div className="login__form">
-                       
-            <input
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                placeholder="Пароль"
-            />
+        <div className="flex items-center justify-center">
+            <div className="flex flex-col h-96 w-1/3 gap-4">
+                        
+                <input className="p-3"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                    placeholder="Пароль"
+                />
 
-            <input
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                placeholder="Адрес электронной почты"
-            />     
+                <input className="p-3"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                    placeholder="Адрес электронной почты"
+                />     
 
-            <button 
-                            onClick={() => handleOnOk()} 
-                            style={{ flex: 1 }}
-                        >
-                            Войти
-                        </button>
+                <button className="p-3 bg-blue-950" onClick={() => handleOnOk()}>
+                    Войти
+                </button>
 
+            </div>
         </div>
-   
 );
 };
