@@ -1,0 +1,11 @@
+
+
+.logout-button, .login-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logout-icon, .login-icon {
+    filter: invert(93%) sepia(11%) saturate(46%) hue-rotate(201deg) brightness(103%) contrast(96%);
+}

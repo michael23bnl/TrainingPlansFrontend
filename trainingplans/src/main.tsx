@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true, // сработает при переходе на "/"
-        element: <div className=''>Hello World</div>,
+        element: <div className='w-full'>Hello World</div>,
       },
       {
         path: "/preparedplans",

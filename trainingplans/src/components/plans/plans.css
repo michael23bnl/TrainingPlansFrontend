@@ -1,0 +1,96 @@
+
+.card-container {
+    padding: 0 8%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  
+  .plan-card {    
+    width: 313px;
+    height: fit-content;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 15px 15px 30px #bebebe, -15px -15px 30px #ffffff;
+    transition: 0.2s ease-in-out;
+    margin: 30px;
+  }
+  
+  .plan-card-header {
+    background: linear-gradient(#a78bfa, #9473f7);
+    /* background: linear-gradient(#05336e, #121256); */
+    width: 100%;
+    height: 65px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    display: flex;
+    align-items: center; 
+    justify-content: right;
+    gap: 8px;
+  }
+  
+  .top-for-hands {
+    background: linear-gradient(#a78bfa, #9473f7);
+  }
+  
+  .top-for-legs {
+    background: linear-gradient(#56d24d, #47b140);
+  }
+  
+  .top-for-circuit {
+    background: linear-gradient(#f86859, #e74c3c);
+  }
+  
+  .plan-card:hover {
+    box-shadow: 0px 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  .icon-button {
+    --button-background: rgba(0,0,0,0.5);
+    display: inline-flex;
+    align-items: center;
+    background: var(--button-background);
+    outline: none;
+    border: none;
+    border-radius: 23%;
+    font-family: 'Lucida Sans' sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 5px;
+    cursor: pointer;
+    margin: 0;
+  }
+  
+  .icon-button:hover .plan-icon {
+    transition: 0.2s;
+  }
+  
+  .plan-icon {
+    z-index: 0;
+    /* --button-color: #bcbcbd; */
+    filter: invert(81%) sepia(0%) saturate(349%) hue-rotate(302deg) brightness(96%) contrast(87%);
+  }
+  
+  .icon-button:hover .plan-favorite-icon {
+    /* color: white; */
+    transform: scale(1.1) rotate(10deg);
+    filter: invert(99%) sepia(1%) saturate(1035%) hue-rotate(210deg) brightness(119%) contrast(100%);
+  }
+  
+  .plan-favorite-icon-active {
+    filter: invert(94%) sepia(54%) saturate(2179%) hue-rotate(319deg) brightness(102%) contrast(102%)!important;
+  }
+  
+  .icon-button:hover .plan-delete-icon {
+    /* color: white; */
+    transform: scale(1.1);
+    filter: invert(37%) sepia(41%) saturate(1597%) hue-rotate(330deg) brightness(105%) contrast(92%);
+  }
+  
+  .icon-button:hover .plan-edit-icon {
+    /* color: white; */
+    transform: scale(1.1) rotate(-360deg);
+    filter: invert(92%) sepia(82%) saturate(570%) hue-rotate(304deg) brightness(90%) contrast(90%);
+  }

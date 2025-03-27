@@ -6,7 +6,8 @@ import {
   RemovePlanFromFavorites,
 } from "../api/plans";
 import starIcon from '../assets/star.svg';
-
+import '../components/plans/plans.css';
+import { PlanSearch } from "../components/plans/PlanSearch";
 
 interface Exercise {
   id: string;
@@ -53,12 +54,13 @@ export const PreparedPlansPage = () => {
     );
   };
 
-  if (loading) return <p>Loading plans...</p>;
+  if (loading) return <p>Загрузка планов...</p>;
 
-  return (
+  return <>
+    <PlanSearch />
     <div>
       {plans.length === 0 ? (
-        <p>Woops! No plans available at the moment</p>
+        <p>Нет доступных планов в данный момент.</p>
       ) : (
         <div className="card-container">
                     {plans.map((plan) => (
@@ -106,5 +108,5 @@ export const PreparedPlansPage = () => {
 
       )}
     </div>
-  );
+  </>
 };

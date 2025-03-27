@@ -4,6 +4,7 @@ import { getAllPlans, deletePlan } from "../api/plans";
 import { useNavigate } from "react-router-dom";
 import deleteIcon from '../assets/delete.svg';
 import editIcon from '../assets/edit.svg';
+import '../components/plans/plans.css';
 
 interface Exercise {
     id: string;
