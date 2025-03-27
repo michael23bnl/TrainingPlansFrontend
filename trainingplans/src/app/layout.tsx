@@ -1,23 +1,14 @@
 
-import AuthNavbar from '../components/layout/AuthNavbar';
+import { Navbar } from '../components/layout/navbar/Navbar';
 import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
   return ( 
-    <div className="min-h-full flex flex-col">
-      <header className="flex items-center justify-between p-8 background black">
-        <div className="ml-20">logo</div>
-        <ul className="flex items-center gap-5">
-          <li><a href={"/"}>Главная</a></li>
-          <li><a href={"/preparedplans"}>Планы</a></li>
-          <li><a href={"/myplans"}>Мои планы</a></li>
-          <li><a href={"/favoriteplans"}>Избранные планы</a></li>
-          <li><a href={"/plansconstructor"}>Создать план</a></li>
-          <li><a href={"/chat"}>Чат</a></li>
-        </ul>
-        <AuthNavbar />
+    <>
+      <header>       
+        <Navbar />
       </header>
-      <main className="flex-1 h-full">
+      <main>
         <Outlet />
       </main>
       <footer className="flex items-center flex-col border-t-8 border-blue-950">
@@ -32,7 +23,7 @@ const Layout = () => {
           <li>No rights reserved.</li>
         </ul>
       </footer>
-    </div>
+    </>
   );
 };
 

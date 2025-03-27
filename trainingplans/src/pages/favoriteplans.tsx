@@ -4,7 +4,7 @@ import { GetFavoritePlans, RemovePlanFromFavorites } from '../api/plans';
 import { useNavigate } from "react-router-dom"
 import starIcon from '../assets/star.svg';
 import editIcon from '../assets/edit.svg';
-
+import '../components/plans/plans.css';
 interface Exercise {
     id: string;
     name: string;
