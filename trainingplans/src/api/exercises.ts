@@ -19,7 +19,7 @@ export const getAllExercises = async () => {
 
 export const getAllExercisesCategorized = async () => {
 
-    const response = await fetch("http://localhost:7000/gateway/PreparedExercises/get/all/categorized", {
+    const response = await fetch("http://localhost:7000/gateway/Exercises/get/all/categorized", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export const deleteExercise = async (id: string) => {
 
 export const getAllPreparedExercises = async () => {
 
-    const response = await fetch("http://localhost:7000/gateway/PreparedExercises/get/all", {
+    const response = await fetch("http://localhost:7000/gateway/Exercises/get/all", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export const getAllPreparedExercises = async () => {
 
 export const getPreparedExercise = async (id: string) => {
 
-    const response = await fetch(`http://localhost:7000/gateway/PreparedExercises/get/${id}`, {
+    const response = await fetch(`http://localhost:7000/gateway/Exercises/get/${id}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export const getPreparedExercise = async (id: string) => {
 
 export const createPreparedExercise = async (exerciseRequest: ExerciseRequest) => {
 
-    const response = await fetch("http://localhost:7000/gateway/PreparedExercises/create", {
+    const response = await fetch("http://localhost:7000/gateway/Exercises/create", {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -136,7 +136,7 @@ export const createPreparedExercise = async (exerciseRequest: ExerciseRequest) =
 
 export const updatePreparedExercise = async (id: string, exerciseRequest: ExerciseRequest) => {
 
-    const response = await fetch(`http://localhost:7000/gateway/PreparedExercises/update/${id}`, {
+    const response = await fetch(`http://localhost:7000/gateway/Exercises/update/${id}`, {
         method: "PUT",
         headers: {
             "content-type": "application/json",
@@ -147,7 +147,7 @@ export const updatePreparedExercise = async (id: string, exerciseRequest: Exerci
 }
 
 export const deletePreparedExercise = async (id: string) => {
-    await fetch(`http://localhost:7000/gateway/PreparedExercises/delete/${id}`, {
+    await fetch(`http://localhost:7000/gateway/Exercises/delete/${id}`, {
         method: "DELETE",
         credentials: 'include',
     })

@@ -11,21 +11,27 @@ export interface LoginUserRequest {
     email: string;
 }
 
+export interface Exercise {
+    id?: string;
+    name: string;
+    muscleGroup?: string;
+}
+
+export interface Plan {
+    id?: string;
+    category?: string;
+    exercises: Exercise[];
+    isFavorite?: boolean;
+    createdBy?: string;
+}
+
 export interface ExerciseRequest {
     name: string;
     muscleGroup: string;
 }
 
-export interface Exercise {
-    name: string;
-}
-
 export interface PlanRequest {
-    name: string;
+    category?: string;
     exercises: ExerciseRequest[];
-}
-
-export interface Plan {
-    name: string;
-    exercises: Exercise[];
+    isFavorite?: boolean;
 }
