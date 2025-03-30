@@ -1,32 +1,4 @@
-import { ExerciseRequest } from "./interfaces";
-import { Exercise } from "./interfaces";
-
-export interface PlanRequest {
-    name: string;
-    exercises: ExerciseRequest[];
-}
-
-export interface Plan {
-    name: string;
-    exercises: Exercise[];
-}
-
-export const getAllPlans = async () => {
-
-    const response = await fetch("http://localhost:7000/gateway/Plans/get/all", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        credentials: "include", // Включить cookies.
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-}
+import { Plan, PlanRequest } from "./interfaces";
 
 export const getPlan = async (id: string) => {
 
@@ -37,7 +9,7 @@ export const getPlan = async (id: string) => {
         },
         credentials: "include", // Включить cookies.
     });
-    return await response.json(); 
+    return response.json(); 
 
 }
 
@@ -78,16 +50,8 @@ export const deletePlan = async (id: string) => {
     })
 }
 
-
-
-
-
-
-
-
-export const getAllPreparedPlans = async () => {
-
-    const response = await fetch("http://localhost:7000/gateway/PreparedPlans/get/all", {
+export const search = async (query: string) => {
+    const response = await fetch(`http://localhost:7000/gateway/Plans/search/${query}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -102,20 +66,47 @@ export const getAllPreparedPlans = async () => {
     return response.json();
 }
 
-export const getPreparedPlan = async (id: string) => {
 
-    const response = await fetch(`http://localhost:7000/gateway/PreparedPlans/get/${id}`, {
+
+
+
+export const getAllPlans = async () => {
+
+    const response = await fetch("http://localhost:7000/gateway/Plans/get/all", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include", // Включить cookies.
     });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+export const getAllPreparedPlans = async () => {
+
+    const response = await fetch("http://localhost:7000/gateway/Plans/get/all-prepared", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include", // Включить cookies.
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
 }
 
 export const createPreparedPlan = async (planRequest: PlanRequest) => {
 
-    const response = await fetch("http://localhost:7000/gateway/PreparedPlans/create", {
+    const response = await fetch("http://localhost:7000/gateway/Plans/create-prepared", {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -130,26 +121,6 @@ export const createPreparedPlan = async (planRequest: PlanRequest) => {
 
     //return response.json();
 }
-
-export const updatePreparedPlan = async (id: string, planRequest: PlanRequest) => {
-
-    const response = await fetch(`http://localhost:7000/gateway/PreparedPlans/update/${id}`, {
-        method: "PUT",
-        headers: {
-            "content-type": "application/json",
-        },
-        body: JSON.stringify(planRequest),
-        credentials: 'include',
-    });
-}
-
-export const deletePreparedPlan = async (id: string) => {
-    await fetch(`http://localhost:7000/gateway/PreparedPlans/delete/${id}`, {
-        method: "DELETE",
-        credentials: 'include',
-    })
-}
-
 
 export const AddPlanToFavorites = async (id: string) => {
 

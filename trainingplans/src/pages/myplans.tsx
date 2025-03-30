@@ -1,90 +1,49 @@
 
-import { useEffect, useState } from "react";
-import { getAllPlans, deletePlan } from "../api/plans";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import deleteIcon from '../assets/delete.svg';
 import editIcon from '../assets/edit.svg';
-import '../components/plans/plans.css';
-
-interface Exercise {
-    id: string;
-    name: string;
-    muscleGroup: string;
-}
-
-interface Plan {
-    id: string;
-    exercises: Exercise[];
-}
+import { useMyPlanFetching } from "../hooks/useMyPlanFetching";
+import { PlanSearch } from "../components/plans/PlanSearch";
+import { PlanList } from "../components/plans/PlanList";
+import { usePlanButtons } from "../hooks/usePlanButtons";
 
 export const MyPlansPage = () => {
-    const [plans, setPlans] = useState<Plan[]>([]);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const { plans, loading, setPlans } = useMyPlanFetching(searchTerm);
+    const { handleDeletePlan, handleEditPlan } = usePlanButtons(setPlans);
 
-    useEffect(() => {
-        const fetchPlans = async () => {
-            const data = await getAllPlans();
-            setPlans(data);
-            setLoading(false);
-        };
-
-        fetchPlans();
-    }, []);
-
-    const handleDeletePlan = async (id: string) => {
-        await deletePlan(id);
-        setPlans((prevPlans) => prevPlans.filter((plan) => plan.id !== id));
-    };
-
-    const handleEditPlan = (id: string) => {
-        navigate(`/plansconstructor?id=${id}`);
-    };
-
-    if (loading) return <p>Loading plans...</p>;
-
-    return (       
-        <div>
-            {plans.length === 0 ? (
-                <p>Woops! No plans available at the moment</p>
-            ) : (
-                <div className="card-container">
-                    {plans.map((plan) => (
-                        <div
-                            key={plan.id}
-                            className="plan-card"
+    return (
+        <>       
+            <PlanSearch 
+                value={searchTerm}
+                onSearch={setSearchTerm}
+                placeholder="Поиск планов по категориям и упражнениям"
+            />
+            { (loading) ? "" :
+                <PlanList
+                    plans={plans}
+                    headerActionButtons={(plan) => (
+                        <>
+                        <button
+                            onClick={() => handleEditPlan(plan.id)}
+                            className="icon-button"
+                            type="button"
                         >
-                            <div className="plan-card-header p-4"> 
-                                <button
-                                    onClick={() => handleEditPlan(plan.id)}
-                                    className="icon-button"
-                                    type="button"
-                                >
-                                    <img src={editIcon} className="plan-icon plan-edit-icon" alt="Edit" />
-                                </button>                           
-                                <button
-                                    onClick={() => handleDeletePlan(plan.id)}
-                                    className="icon-button"
-                                    type="button"
-                                >
-                                    <img src={deleteIcon} className="plan-icon plan-delete-icon" alt="Delete" />
-                                </button>                           
-                            </div>
-                            <div className="pb-4 pr-4 pl-4">
-                              <ul className="flex flex-col items-center gap-2">
-                                  {plan.exercises.map((exercise) => (
-                                      <li key={exercise.id} className="">
-                                          <p className="mt-3">{exercise.name}</p>
-                                      </li>
-                                  ))}
-                              </ul>
-                            </div>
-                        </div>
-                    ))}                 
-                </div>
-            )}
-        </div>
-    );
+                            <img src={editIcon} className="plan-icon plan-edit-icon" alt="Edit" />
+                        </button>                           
+                        <button
+                            onClick={() => handleDeletePlan(plan.id)}
+                            className="icon-button"
+                            type="button"
+                        >
+                            <img src={deleteIcon} className="plan-icon plan-delete-icon" alt="Delete" />
+                        </button>  
+                        </>
+                    )}    
+                />
+            }
+        </>
+    )
 };
 
 export default MyPlansPage;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import "./ExerciseSelector.css";
 
 interface ExerciseRequest {
     name: string;
@@ -58,29 +59,29 @@ export const ExerciseSelector = ({
     return (
         <div
             ref={listRef}
-            className="absolute top-0 left-full ml-4 w-96 bg-white border border-gray-300 rounded-lg shadow-xl z-20"
+            className="exercise-selector"
         >
-            <div className="p-4">
+            <div className="exercise-selector__search">
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Поиск упражнений..."
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                    className="exercise-selector__search-input"
                 />
             </div>
-            <ul className="list-none p-4 max-h-80 overflow-y-auto">
+            <ul className="exercise-selector__list">
                 {Object.keys(filteredExercises).length === 0 ? (
-                    <li className="text-gray-500">Нет совпадений</li>
+                    <li className="exercise-selector__no-matches">Нет совпадений</li>
                 ) : (
                     Object.keys(filteredExercises).map((muscleGroup) => (
-                        <li key={muscleGroup} className="mb-4">
-                            <div className="font-bold text-xl mb-2">{muscleGroup}</div>
+                        <li key={muscleGroup} className="exercise-selector__muscle-group-container">
+                            <div className="exercise-selector__muscle-group">{muscleGroup}</div>
                             <ul>
                                 {filteredExercises[muscleGroup].map((exercise) => (
                                     <li
                                         key={exercise.name}
-                                        className="cursor-pointer hover:bg-gray-100 p-2 rounded-md text-lg"
+                                        className="exercise-selector__exercise-item"
                                         onClick={() => onSelect(exercise.name)}
                                     >
                                         {exercise.name}

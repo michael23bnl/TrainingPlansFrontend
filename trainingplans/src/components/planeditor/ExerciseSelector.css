@@ -1,0 +1,68 @@
+/* ExerciseSelector.css */
+.exercise-selector {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    margin-top: 0.5rem;
+  }
+  
+  .exercise-selector__search {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .exercise-selector__search-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+  }
+  
+  .exercise-selector__search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+  
+  .exercise-selector__list {
+    list-style: none;
+    padding: 0.5rem;
+    max-height: 20rem;
+    overflow-y: auto;
+    margin: 0;
+  }
+  
+  .exercise-selector__no-matches {
+    color: #6b7280;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .exercise-selector__muscle-group {
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    background-color: #f3f4f6;
+    margin: 0.5rem 0;
+    border-radius: 0.25rem;
+  }
+  
+  .exercise-selector__exercise-item {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+  }
+  
+  .exercise-selector__exercise-item:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .exercise-selector__muscle-group-container {
+    margin-bottom: 0.5rem;
+  }
