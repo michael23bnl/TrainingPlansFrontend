@@ -81,6 +81,7 @@ export const PlanEditor = ({
   };
 
   const handleSavePlan = () => {
+    
     const plan: Plan = { 
       category: category, 
       exercises,

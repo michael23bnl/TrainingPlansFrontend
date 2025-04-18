@@ -5,46 +5,37 @@ import { Chat } from "../components/chat/Chat"
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect } from "react";
 import { Message } from "../components/chat/Message";
-
-
-interface Exercise {
-    id: string;
-    name: string;
-    muscleGroup: string;
-}
-
-interface Plan {
-    id: string;
-    exercises: Exercise[];
-}
+import { Plan } from "../api/interfaces";
 
 export const ChatPage = () => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [chatRoom, setChatRoom] = useState<string>("");
     const [messages, setMessages] = useState<Message[]>([]);
-    const [plans, setPlans] = useState<Plan[]>([]);
     const [chatRooms, setChatRooms] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [joinNewChat, setJoinNewChat] = useState<boolean>(false);
-    useEffect(() => {
+
+    useEffect(() => { // вызывается дважды в StrictMode
+
+        const connection = new HubConnectionBuilder()
+            .withUrl("http://localhost:7000/gateway/api/chat")
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(connection);
+
+        connection.on("ReceiveMessage", (userName, message, plans, sendingDate) => {
+            //console.log("Получено сообщение:", { userName, message, sendingDate });
+            setMessages(prevMessages => [...prevMessages, { userName, message, plans, sendingDate }]);
+        });
+
         const fetchChatRooms = async () => {
             try {
-                const connection = new HubConnectionBuilder()
-                    .withUrl("http://localhost:8003/api/chat")
-                    .withAutomaticReconnect()
-                    .build();
-                
-                console.log(connection.connectionId);
-                
-                
-                connection.on("RecieveMessage", (userName, message, sendingDate) => {
-                    //console.log("Получено сообщение:", { userName, message, sendingDate }); // Лог
-                    setMessages(prevMessages => [...prevMessages, { userName, message, sendingDate }]);
-                });
                 await connection.start();
+                console.log(connection.connectionId);
+
                 const rooms: string[] = await connection.invoke("GetChatGroups");
                 setChatRooms(rooms);
-                setConnection(connection);
             } catch (error) {
                 console.error("Ошибка загрузки чатов:", error);
             } finally {
@@ -52,20 +43,19 @@ export const ChatPage = () => {
             }
         };
         fetchChatRooms();
-        
-        if (!connection) return;
 
         return () => {
-            connection.off("RecieveMessage"); // Отписка при размонтировании
+            connection.off("ReceiveMessage");
+            connection.stop();
         };
     }, []);
 
-    const joinChat = async (userName: string, chatRoom: string) => {
+    const joinChat = async (chatRoom: string) => {
         if (!connection) return;
     
         try {
             // Присоединение к чату
-            const response = await connection.invoke("JoinChat", { userName, chatRoom });
+            const response = await connection.invoke("JoinChat", { chatRoom });
             
             if (response.statusCode === 200) {
                 setChatRoom(chatRoom);
@@ -85,22 +75,13 @@ export const ChatPage = () => {
     };
     
 
-    const sendMessage = (message: string, chatRoom: string) => {
+    const sendMessage = (message: string, plans: Plan[], chatRoom: string) => {
         if (!connection) return;
-    
-        connection.invoke("SendMessage", message, chatRoom);
-    };
 
-    const sendPlan = (plan: Plan, chatRoom: string) => {
-        if (!connection) return;
-        connection.invoke("SendPlan", plan, chatRoom);
-    };
-
-    const closeChat = async () => {
-        if (connection) {
-            await connection.stop();
-            setConnection(null);
-            setMessages([]);
+        if (message != "" || plans.length != 0) {
+            console.log(message);
+            console.log(plans);
+            connection.invoke("SendMessage", message, plans, chatRoom);
         }
     };
 
@@ -184,7 +165,6 @@ export const ChatPage = () => {
                                 messages={messages} 
                                 chatRoom={chatRoom} 
                                 sendMessage={sendMessage}
-                                sendPlan={sendPlan}
                             />
                         </div>
                     ) : (

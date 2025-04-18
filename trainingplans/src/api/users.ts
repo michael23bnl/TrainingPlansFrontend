@@ -12,7 +12,7 @@ export const register = async (registerUserRequest: RegisterUserRequest) => {
 }
 
 export const login = async (loginUserRequest: LoginUserRequest) => {
-    await fetch("http://localhost:7000/gateway/Users/login", {
+    const response = await fetch("http://localhost:7000/gateway/Users/login", {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -20,6 +20,7 @@ export const login = async (loginUserRequest: LoginUserRequest) => {
         body: JSON.stringify(loginUserRequest),
         credentials: 'include',
     })
+    return response;
 }
 
 export const logout = async () => {
