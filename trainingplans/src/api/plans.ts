@@ -104,6 +104,23 @@ export const getAllPreparedPlans = async () => {
     return response.json();
 }
 
+export const getAllAvailablePlans = async () => {
+
+    const response = await fetch("http://localhost:7000/gateway/Plans/get/all-available", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include", // Включить cookies.
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+}
+
 export const createPreparedPlan = async (planRequest: PlanRequest) => {
 
     const response = await fetch("http://localhost:7000/gateway/Plans/create-prepared", {

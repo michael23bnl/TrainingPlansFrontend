@@ -110,3 +110,13 @@
     transform: scale(1.1) rotate(-360deg);
     filter: invert(92%) sepia(82%) saturate(570%) hue-rotate(304deg) brightness(90%) contrast(90%);
   }
+
+  .icon-button:hover .plan-choose-icon {
+    /* color: white; */
+    transform: scale(1.3);
+    filter: invert(99%) sepia(1%) saturate(1035%) hue-rotate(210deg) brightness(119%) contrast(100%);
+  }
+
+  .plan-choose-icon-active {
+    filter: brightness(0) saturate(100%) invert(53%) sepia(12%) saturate(3299%) hue-rotate(78deg) brightness(101%) contrast(75%)!important;
+  }

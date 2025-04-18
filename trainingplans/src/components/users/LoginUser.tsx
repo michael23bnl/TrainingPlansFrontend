@@ -5,7 +5,7 @@ import { useState } from "react";
 
 
 interface Props {  
-    handleLogin: (request: LoginUserRequest) => void;
+    handleLogin: (request: LoginUserRequest) => Promise<{status : number}>;
 }
 
 export const LoginUser = ({
@@ -19,8 +19,10 @@ export const LoginUser = ({
 
     const handleOnOk = async () => {
         const loginUserRequest = { password, email };
-        await handleLogin(loginUserRequest);
-        login();
+        const response = await handleLogin(loginUserRequest);
+        if (response.status === 200) {
+            login();
+        }
     };
 
     return (    
