@@ -44,7 +44,7 @@ export const Navbar = () => {
                 <NavLink to={"/plansconstructor"}
                 className={({ isActive }) => (isActive ? "active" : "")}
                 >
-                    Создать план
+                    Редактор планов
                 </NavLink>
             </li>
             <li>
@@ -52,6 +52,13 @@ export const Navbar = () => {
                 className={({ isActive }) => (isActive ? "active" : "")}
                 >
                     Чат
+                </NavLink>
+            </li>
+            <li>
+                <NavLink to={"/statistics"}
+                className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                    Статистика
                 </NavLink>
             </li>
         </ul>      

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllPlans, search } from "../api/plans";
+import { getAllPlans, searchThroughMyPlans } from "../api/plans";
 import { Plan } from "../api/interfaces";
 
 export const useMyPlanFetching = (searchTerm: string) => {
@@ -11,7 +11,7 @@ export const useMyPlanFetching = (searchTerm: string) => {
       setLoading(true);
       try {
         const data = searchTerm 
-          ? await search(searchTerm)
+          ? await searchThroughMyPlans(searchTerm)
           : await getAllPlans();
         setPlans(data);
       } catch (error) {
