@@ -15,7 +15,7 @@ interface ChatProps {
 export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
     const [message, setMessage] = useState("");
     const [plans, setPlans] = useState<Plan[]>([]);
-    const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
+    const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]); 
     const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
     const messagesEndRef = useRef<HTMLSpanElement>(null);
 

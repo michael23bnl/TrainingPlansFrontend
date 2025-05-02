@@ -11,6 +11,7 @@ import { MyPlansPage } from './pages/myplans.tsx'
 import { PreparedPlansPage } from './pages/preparedplans.tsx'
 import { PlanConstructorPage } from './pages/plansconstructor.tsx'
 import { RegistrationPage } from './pages/register.tsx'
+import { StatisticsPage } from './pages/statistics.tsx'
 
 const router = createBrowserRouter([
   {
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
       
       {
         path: "/statistics",
-        element: ""
+        element: <StatisticsPage />
       },
       {
         path: "/me",

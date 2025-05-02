@@ -66,6 +66,21 @@ export const search = async (query: string) => {
     return response.json();
 }
 
+export const searchThroughMyPlans = async (query: string) => {
+    const response = await fetch(`http://localhost:7000/gateway/Plans/search/my-plans/${query}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include", // Включить cookies.
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+}
 
 
 

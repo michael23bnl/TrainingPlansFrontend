@@ -7,6 +7,17 @@ import { useState, useEffect } from "react";
 import { Message } from "../components/chat/Message";
 import { Plan } from "../api/interfaces";
 
+// interface Exercise {
+//     id: string,
+//     name: string
+// }
+
+// interface Plan {
+//     id: string,
+//     exercises: Exercise[],
+//     category?: string
+// }
+
 export const ChatPage = () => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [chatRoom, setChatRoom] = useState<string>("");
@@ -54,16 +65,14 @@ export const ChatPage = () => {
         if (!connection) return;
     
         try {
-            // Присоединение к чату
             const response = await connection.invoke("JoinChat", { chatRoom });
             
             if (response.statusCode === 200) {
                 setChatRoom(chatRoom);
                 setChatRooms((prevRooms) => [...prevRooms, chatRoom]);
     
-                // Запрос старых сообщений при присоединении
                 const previousMessages: Message[] = await connection.invoke("GetPreviousMessages", chatRoom);
-                setMessages(previousMessages);  // Обновление сообщений
+                setMessages(previousMessages);
                 setJoinNewChat(false);
             } else {
                 console.log(response.status);
@@ -88,8 +97,8 @@ export const ChatPage = () => {
     const leaveChat = async (room: string) => {
         if (connection) {
             await connection.invoke("LeaveChat", room);
-            setMessages([]);  // Очищаем сообщения
-            setChatRoom("");   // Очищаем текущую комнату
+            setMessages([]);
+            setChatRoom("");
     
             setChatRooms(prevRooms => prevRooms.filter(r => r !== room));
         }
@@ -99,10 +108,8 @@ export const ChatPage = () => {
         if (!connection) return;
     
         try {
-            // Смена текущей комнаты
             setChatRoom(chatRoom);
     
-            // Получаем старые сообщения для нового чата
             const previousMessages: Message[] = await connection.invoke("GetPreviousMessages", chatRoom);
     
             setMessages(previousMessages);
@@ -148,7 +155,7 @@ export const ChatPage = () => {
                                         {room}
                                     </button>
                                     <button 
-                                        onClick={() => leaveChat(room)}  // Передаем текущий чат в leaveChat
+                                        onClick={() => leaveChat(room)}
                                         className="text-red-500 hover:text-red-700"
                                     >
                                         Покинуть чат
