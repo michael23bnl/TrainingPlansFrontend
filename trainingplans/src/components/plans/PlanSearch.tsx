@@ -1,4 +1,5 @@
 import './PlanSearch.css';
+import searchIcon from '../../assets/search.svg';
 import { useEffect, useRef } from 'react';
 
 interface PlanSearchProps {
