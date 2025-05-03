@@ -82,6 +82,38 @@ export const searchThroughMyPlans = async (query: string) => {
     return response.json();
 }
 
+export const searchThroughFavorites = async (query: string) => {
+    const response = await fetch(`http://localhost:7000/gateway/Plans/search/favorites/${query}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include", // Включить cookies.
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+export const searchThroughCompletedPlans = async (query: string) => {
+    const response = await fetch(`http://localhost:7000/gateway/Plans/search/completed-plans/${query}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include", // Включить cookies.
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+}
+
 
 
 
@@ -195,3 +227,31 @@ export const EditFavoritePlan = async (id: string, planRequest: Plan) => {
     return await response.json(); 
 }
 
+export const MarkAsCompleted = async (id: string) => {
+
+    const response = await fetch(`http://localhost:7000/gateway/CompletedPlans/mark/${id}`, {
+        method: "POST",
+        credentials: 'include',
+    });
+}
+
+export const RemoveCompletedMark = async (id: string) => {
+
+    const response = await fetch(`http://localhost:7000/gateway/CompletedPlans/unmark/${id}`, {
+        method: "DELETE",
+        credentials: 'include',
+    });
+}
+
+export const GetCompletedPlans = async () => {
+
+    const response = await fetch("http://localhost:7000/gateway/CompletedPlans/get/all", {
+        method: "GET",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: 'include',
+    });
+
+    return response.json();
+}

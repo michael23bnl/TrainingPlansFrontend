@@ -40,7 +40,10 @@ export const PreparedPlansPage = () => {
                 type="button"
                 title="Добавить в избранное"
               >
-                <img src={starIcon} className="plan-icon plan-favorite-icon" alt="Add to favorite" />
+                <img src={starIcon} 
+                  className="plan-icon plan-favorite-icon" 
+                  alt="Add to favorite" 
+                />
               </button>
             )
           )}       

@@ -22,6 +22,7 @@ export interface Plan {
     category?: string;
     exercises: Exercise[];
     isFavorite?: boolean;
+    isCompleted?: boolean;
     createdBy?: string;
 }
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { GetFavoritePlans, searchThroughFavorites } from "../api/plans";
+import { GetCompletedPlans, searchThroughCompletedPlans } from "../api/plans";
 import { Plan } from "../api/interfaces";
 
-export const useFavoritePlanFetching = (searchTerm: string) => {
+export const useCompletedPlanFetching = (searchTerm: string) => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -11,8 +11,8 @@ export const useFavoritePlanFetching = (searchTerm: string) => {
       setLoading(true);
       try {
         const data = searchTerm 
-          ? await searchThroughFavorites(searchTerm)
-          : await GetFavoritePlans();
+          ? await searchThroughCompletedPlans(searchTerm)
+          : await GetCompletedPlans();
         setPlans(data);
       } catch (error) {
         console.error("Error fetching plans:", error);

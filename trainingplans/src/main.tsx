@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { AuthProvider } from './store/contexts/AuthContext.tsx'
 import { ChatPage } from './pages/chat.tsx'
 import { FavoritePlansPage } from './pages/favoriteplans.tsx'
+import { CompletedPlansPage } from './pages/completedplans.tsx'
 import { LoginPage } from './pages/login.tsx'
 import { MyPlansPage } from './pages/myplans.tsx'
 import { PreparedPlansPage } from './pages/preparedplans.tsx'
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "/favoriteplans",
         element: <FavoritePlansPage />
+      },
+      {
+        path: "/completedplans",
+        element: <CompletedPlansPage />
       },
       {
         path: "/plansconstructor",
