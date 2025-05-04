@@ -36,3 +36,13 @@ export interface PlanRequest {
     exercises: ExerciseRequest[];
     isFavorite?: boolean;
 }
+
+export interface PlanParameters {
+    pageNumber?: number;
+    pageSize?: number;
+}
+
+export interface PlansResponse {
+    totalCount: number;
+    plans: Plan[];
+}

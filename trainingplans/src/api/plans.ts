@@ -1,4 +1,5 @@
-import { Plan, PlanRequest } from "./interfaces";
+import { Plan, PlanRequest, PlanParameters, PlansResponse } from "./interfaces";
+
 
 export const getPlan = async (id: string) => {
 
@@ -50,8 +51,13 @@ export const deletePlan = async (id: string) => {
     })
 }
 
-export const search = async (query: string) => {
-    const response = await fetch(`http://localhost:7000/gateway/Plans/search/${query}`, {
+export const search = async (query: string, planParameters: PlanParameters) => {
+    const queryParams = new URLSearchParams();
+
+    if (planParameters.pageNumber) queryParams.append('pageNumber', planParameters.pageNumber.toString());
+    if (planParameters.pageSize) queryParams.append('pageSize', planParameters.pageSize.toString());
+
+    const response = await fetch(`http://localhost:7000/gateway/Plans/search/${query}?${queryParams.toString()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -115,11 +121,13 @@ export const searchThroughCompletedPlans = async (query: string) => {
 }
 
 
+export const getAllPlans = async (planParameters: PlanParameters) => {
+    const queryParams = new URLSearchParams();
+    
+    if (planParameters.pageNumber) queryParams.append('pageNumber', planParameters.pageNumber.toString());
+    if (planParameters.pageSize) queryParams.append('pageSize', planParameters.pageSize.toString());
 
-
-export const getAllPlans = async () => {
-
-    const response = await fetch("http://localhost:7000/gateway/Plans/get/all", {
+    const response = await fetch(`http://localhost:7000/gateway/Plans/get/all?${queryParams.toString()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -131,24 +139,32 @@ export const getAllPlans = async () => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    const json = await response.json();
+    // console.log(json);
+    return json;
 }
 
-export const getAllPreparedPlans = async () => {
-
-    const response = await fetch("http://localhost:7000/gateway/Plans/get/all-prepared", {
+export const getAllPreparedPlans = async (planParameters: PlanParameters) => {
+    const queryParams = new URLSearchParams();
+    
+    if (planParameters.pageNumber) queryParams.append('pageNumber', planParameters.pageNumber.toString());
+    if (planParameters.pageSize) queryParams.append('pageSize', planParameters.pageSize.toString());
+    
+    const response = await fetch(`http://localhost:7000/gateway/Plans/get/all-prepared?${queryParams.toString()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
-        credentials: "include", // Включить cookies.
+        credentials: "include",
     });
 
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    const json = await response.json();
+    // console.log(json);
+    return json;
 }
 
 export const getAllAvailablePlans = async () => {
@@ -202,9 +218,13 @@ export const RemovePlanFromFavorites = async (id: string) => {
     });
 }
 
-export const GetFavoritePlans = async () => {
+export const GetFavoritePlans = async (planParameters: PlanParameters) => {
+    const queryParams = new URLSearchParams();
+    
+    if (planParameters.pageNumber) queryParams.append('pageNumber', planParameters.pageNumber.toString());
+    if (planParameters.pageSize) queryParams.append('pageSize', planParameters.pageSize.toString());
 
-    const response = await fetch("http://localhost:7000/gateway/FavoritePlans/get/all", {
+    const response = await fetch(`http://localhost:7000/gateway/FavoritePlans/get/all?${queryParams.toString()}`, {
         method: "GET",
         headers: {
             "content-type": "application/json",
@@ -212,7 +232,9 @@ export const GetFavoritePlans = async () => {
         credentials: 'include',
     });
 
-    return response.json();
+    const json = await response.json();
+    // console.log(json);
+    return json;
 }
 
 export const EditFavoritePlan = async (id: string, planRequest: Plan) => {
@@ -254,4 +276,23 @@ export const GetCompletedPlans = async () => {
     });
 
     return response.json();
+}
+
+export const GetCompletedPlansPaginated = async (planParameters: PlanParameters) => {
+    const queryParams = new URLSearchParams();
+    
+    if (planParameters.pageNumber) queryParams.append('pageNumber', planParameters.pageNumber.toString());
+    if (planParameters.pageSize) queryParams.append('pageSize', planParameters.pageSize.toString());
+
+    const response = await fetch(`http://localhost:7000/gateway/CompletedPlans/get/all/paginated?${queryParams.toString()}`, {
+        method: "GET",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: 'include',
+    });
+
+    const json = await response.json();
+    // console.log(json);
+    return json;
 }

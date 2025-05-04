@@ -1,15 +1,25 @@
 
 import { useState } from 'react';
 import doneIcon from '../assets/done.svg';
-import { useCompletedPlanFetching } from '../hooks/useCompletedPlanFetching';
+import { usePlanFetching } from '../hooks/usePlanFetching';
+import { GetCompletedPlansPaginated, searchThroughCompletedPlans } from '../api/plans';
 import { PlanSearch } from "../components/plans/PlanSearch";
 import { PlanList } from "../components/plans/PlanList";
 import { usePlanCompleteButtons } from '../hooks/usePlanCompleteButtons';
+import { Pagination } from "../components/pagination/pagination";
 
 export const CompletedPlansPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { plans, loading, setPlans } = useCompletedPlanFetching(searchTerm);
+    const [pagination, setPagination] = useState({
+        pageNumber: 1,
+        pageSize: 10
+      });
+    const { plans, plansSize, loading, setPlans } = usePlanFetching(searchTerm, pagination, GetCompletedPlansPaginated, searchThroughCompletedPlans);
     const { handleRemoveFromCompletedPage } = usePlanCompleteButtons(setPlans);
+
+    const handlePageChange = (pageNumber: number) => {
+        setPagination(prev => ({ ...prev, pageNumber }));
+    };
   
     return (
         <>       
@@ -19,6 +29,7 @@ export const CompletedPlansPage = () => {
                 placeholder="Поиск планов по категориям и упражнениям"
             />
             { (loading) ? "" :
+            <>
                 <PlanList
                     plans={plans}
                     headerActionButtons={(plan) => (
@@ -37,6 +48,13 @@ export const CompletedPlansPage = () => {
                         </>
                     )}    
                 />
+                <Pagination
+                    currentPage={pagination.pageNumber}
+                    pageSize={pagination.pageSize}
+                    totalCount={plansSize}
+                    onPageChange={handlePageChange}
+                />
+                </>
             }
         </>
     );

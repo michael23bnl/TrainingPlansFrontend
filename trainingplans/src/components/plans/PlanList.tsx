@@ -40,8 +40,8 @@ export const PlanList = ({ plans, headerActionButtons } : PlanListProps) => {
                                 </div>
                                 : null}                           
                             <ul className="flex flex-col gap-2">
-                                {plan.exercises.map((exercise) => (
-                                    <li key={exercise.id} className="">
+                                {plan.exercises.map((exercise, index) => (
+                                    <li key={index} className="">
                                         <p className="mt-3">{exercise.name}</p>
                                     </li>
                                 ))}
