@@ -3,26 +3,47 @@ import { useState } from 'react';
 import starIcon from '../assets/star.svg';
 import editIcon from '../assets/edit.svg';
 import doneIcon from '../assets/done.svg';
-import { useFavoritePlanFetching } from '../hooks/useFavoritePlanFetcing';
+import { usePlanFetching } from '../hooks/usePlanFetching';
+import { GetFavoritePlans, searchThroughFavorites } from '../api/plans';
 import { PlanSearch } from "../components/plans/PlanSearch";
 import { PlanList } from "../components/plans/PlanList";
 import { usePlanFavoriteButtons } from '../hooks/usePlanFavoriteButtons';
 import { usePlanCompleteButtons } from '../hooks/usePlanCompleteButtons';
+import { Pagination } from "../components/pagination/pagination";
 
 export const FavoritePlansPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { plans, loading, setPlans } = useFavoritePlanFetching(searchTerm);
+    const [pagination, setPagination] = useState({
+      pageNumber: 1,
+      pageSize: 10
+    });
+    const { plans, plansSize, loading, setPlans } = usePlanFetching(searchTerm, pagination, GetFavoritePlans, searchThroughFavorites);
     const { handleRemoveFromFavoritesPage, handleEditFavoritePlan } = usePlanFavoriteButtons(setPlans);
     const { handleMarkAsCompleted, handleRemoveCompletedMark } = usePlanCompleteButtons(setPlans);
+
+    const handlePageChange = (pageNumber: number) => {
+      setPagination(prev => ({ ...prev, pageNumber }));
+    };
   
     return (
         <>       
             <PlanSearch 
-                value={searchTerm}
-                onSearch={setSearchTerm}
-                placeholder="Поиск планов по категориям и упражнениям"
+              value={searchTerm}
+              onSearch={(term) => {
+                setSearchTerm(prevTerm => {
+                  if (prevTerm !== term) {
+                    setPagination(prev => ({
+                      ...prev,
+                      pageNumber: 1
+                    }));
+                  }
+                  return term;
+                });
+              }}
+              placeholder="Поиск планов по категориям и упражнениям"
             />
             { (loading) ? "" :
+            <>
                 <PlanList
                     plans={plans}
                     headerActionButtons={(plan) => (
@@ -70,6 +91,13 @@ export const FavoritePlansPage = () => {
                         </>
                     )}    
                 />
+                <Pagination
+                  currentPage={pagination.pageNumber}
+                  pageSize={pagination.pageSize}
+                  totalCount={plansSize}
+                  onPageChange={handlePageChange}
+                />
+              </>
             }
         </>
     );

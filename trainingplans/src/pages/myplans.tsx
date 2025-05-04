@@ -3,26 +3,47 @@ import { useState } from "react";
 import deleteIcon from '../assets/delete.svg';
 import editIcon from '../assets/edit.svg';
 import doneIcon from '../assets/done.svg';
-import { useMyPlanFetching } from "../hooks/useMyPlanFetching";
+import { usePlanFetching } from '../hooks/usePlanFetching';
+import { getAllPlans, searchThroughMyPlans } from '../api/plans';
 import { PlanSearch } from "../components/plans/PlanSearch";
 import { PlanList } from "../components/plans/PlanList";
 import { usePlanButtons } from "../hooks/usePlanButtons";
 import { usePlanCompleteButtons } from '../hooks/usePlanCompleteButtons';
+import { Pagination } from "../components/pagination/pagination";
 
 export const MyPlansPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { plans, loading, setPlans } = useMyPlanFetching(searchTerm);
+    const [pagination, setPagination] = useState({
+      pageNumber: 1,
+      pageSize: 10
+    });
+    const { plans, plansSize, loading, setPlans } = usePlanFetching(searchTerm, pagination, getAllPlans, searchThroughMyPlans);
     const { handleDeletePlan, handleEditPlan } = usePlanButtons(setPlans);
     const { handleMarkAsCompleted, handleRemoveCompletedMark } = usePlanCompleteButtons(setPlans);
+
+    const handlePageChange = (pageNumber: number) => {
+      setPagination(prev => ({ ...prev, pageNumber }));
+    };
 
     return (
         <>       
             <PlanSearch 
-                value={searchTerm}
-                onSearch={setSearchTerm}
-                placeholder="Поиск планов по категориям и упражнениям"
+              value={searchTerm}
+              onSearch={(term) => {
+                setSearchTerm(prevTerm => {
+                  if (prevTerm !== term) {
+                    setPagination(prev => ({
+                      ...prev,
+                      pageNumber: 1
+                    }));
+                  }
+                  return term;
+                });
+              }}
+              placeholder="Поиск планов по категориям и упражнениям"
             />
             { (loading) ? "" :
+            <>
                 <PlanList
                     plans={plans}
                     headerActionButtons={(plan) => (
@@ -68,6 +89,13 @@ export const MyPlansPage = () => {
                         </>
                     )}    
                 />
+                <Pagination
+                  currentPage={pagination.pageNumber}
+                  pageSize={pagination.pageSize}
+                  totalCount={plansSize}
+                  onPageChange={handlePageChange}
+                />
+              </>
             }
         </>
     )
