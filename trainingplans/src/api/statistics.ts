@@ -1,8 +1,8 @@
 
 
-export const getStatistics = async () => {
+export const getStatistics = async (period: string) => {
 
-    const response = await fetch("http://localhost:7000/gateway/Statistics/get", {
+    const response = await fetch(`http://localhost:7000/gateway/Statistics/get/${period}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

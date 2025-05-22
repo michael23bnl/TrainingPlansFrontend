@@ -28,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     await performLogout();
     setIsLoggedIn(false);
+    window.location.reload()
   };
 
   return (

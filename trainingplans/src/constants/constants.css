@@ -1,0 +1,19 @@
+
+:root {
+  --social-media-icon-size: 48px;  /* w-12 = 48px */
+  --social-media-icon-gap: 24px;        /* gap-6 = 24px */
+  --padding: 0 110px;
+}
+
+.social-icon {
+  width: var(--social-icon-size);
+  height: var(--social-icon-size);
+}
+
+.social-list {
+  padding: 40px var(--section-padding-x) 16px; /* p-10 pb-4 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--social-gap);
+}
