@@ -3,7 +3,6 @@ export interface RegisterUserRequest {
     userName: string;
     password: string;
     email: string;
-    role: string;
 }
 
 export interface LoginUserRequest {
@@ -37,12 +36,20 @@ export interface PlanRequest {
     isFavorite?: boolean;
 }
 
+export interface PlansResponse {
+    totalCount: number;
+    plans: Plan[];
+}
+
 export interface PlanParameters {
     pageNumber?: number;
     pageSize?: number;
 }
 
-export interface PlansResponse {
-    totalCount: number;
-    plans: Plan[];
+export interface Statistic {
+  id: string;
+  userId: string;
+  planId: string;
+  muscleGroup: string;
+  completionDate: string;
 }

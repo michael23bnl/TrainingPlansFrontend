@@ -10,6 +10,7 @@
   
   .pagination button {
     padding: 8px 12px;
+    margin: 0 8px;
     min-width: 40px;
     border: 1px solid #e2e8f0;
     background-color: #fff;
@@ -40,7 +41,6 @@
     font-weight: 500;
   }
   
-  /* Для мобильных устройств */
   @media (max-width: 640px) {
     .pagination {
       gap: 4px;

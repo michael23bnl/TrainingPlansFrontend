@@ -6,6 +6,9 @@ import { usePlanFavoriteButtons } from "../hooks/usePlanFavoriteButtons";
 import { PlanSearch } from "../components/plans/PlanSearch";
 import { PlanList } from "../components/plans/PlanList";
 import { Pagination } from "../components/pagination/pagination";
+import { useAuthContext } from "../store/contexts/AuthContext";
+import { AuthAlert } from "../components/users/AuthAlert";
+import { useNavigate } from "react-router-dom";
 
 export const PreparedPlansPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,6 +18,10 @@ export const PreparedPlansPage = () => {
   });
   const { plans, plansSize, loading, setPlans } = usePlanFetching(searchTerm, pagination, getAllPreparedPlans, search);
   const { handleAddToFavorites, handleRemoveFromFavorites } = usePlanFavoriteButtons(setPlans);
+
+  const { isLoggedIn } = useAuthContext();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const navigate = useNavigate();
 
   const handlePageChange = (pageNumber: number) => {
     setPagination(prev => ({ ...prev, pageNumber }));
@@ -56,7 +63,14 @@ export const PreparedPlansPage = () => {
               </button>
             ) : (
               <button
-                onClick={() => handleAddToFavorites(plan.id)}
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    setShowAuthModal(true);
+                  }
+                  else {
+                    handleAddToFavorites(plan.id)
+                  }                 
+                }}
                 className="icon-button"
                 type="button"
                 title="Добавить в избранное"
@@ -75,6 +89,15 @@ export const PreparedPlansPage = () => {
           totalCount={plansSize}
           onPageChange={handlePageChange}
         />
+        {showAuthModal && (
+          <AuthAlert 
+            onClose={() => setShowAuthModal(false)}
+            onLoginRedirect={() => {
+              setShowAuthModal(false);
+              navigate('/login', { state: { from: window.location.pathname } });
+            }}
+          />
+        )}
         </>
       }
     </>

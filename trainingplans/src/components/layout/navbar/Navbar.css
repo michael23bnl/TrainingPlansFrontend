@@ -4,12 +4,10 @@
 
 nav {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    /* background-color: #0f1629; */
+    z-index: 1;
+    align-items: center !important;
     background-color: rgba(0,0,0,0.8);
     backdrop-filter: blur(0.8px);
-    /* background: linear-gradient(#05336e, #121256); */
     color: #f4f4f8;
     padding: 0 110px;
     height: 65px;
@@ -17,6 +15,7 @@ nav {
 }
 
 nav .title {
+    margin-right: 10px;
     font-size: 1.5rem;
     font-weight: bold;
     text-decoration: none;
@@ -28,7 +27,7 @@ nav ul {
     justify-content: space-between;
 }
 
-nav ul li a, button {
+nav ul li a, nav ul li button {
     display: block;
     text-decoration: none;
     color: white;
@@ -39,7 +38,7 @@ nav ul li a, button {
 }
 
 nav ul li a:not(.active):hover, 
-nav ul li button:hover {
+nav ul li button:not(.active):hover {
     /* background-color: #172554; */
     background-color: rgba(255,255,255,0.15);
     transition: all 0.5s ease;
@@ -61,13 +60,61 @@ nav .menu span {
     border-radius: 0.2rem;
 }
 
+.nav-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-container-left, .nav-container-right {
+    display: flex;
+}
+
 @media (max-width: 900px) {
-    nav {
-        align-items: start;
+    
+    .nav-container {
+        width: 100%;
+    }
+
+    .nav-container-left {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .nav-container-right {
+        display: none;
     }
 
     nav .title {
         order: -1;
+    }
+
+    nav ul {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(0.8px);
+        display: none;
+        flex-direction: column;      
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+    nav ul li {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        text-align: center;
+    }
+
+    nav ul li a {
+        width: 100%;
+        margin: 0.2rem 0.5rem;
     }
 
     nav .menu {
@@ -75,23 +122,102 @@ nav .menu span {
         order: 0;
     }
 
-    nav ul {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        margin-bottom: 0.25rem;
-    }
-
     nav ul.open {
         display: flex;
     }
 
-    nav ul li {
+    .dropdown {
         width: 100%;
-        text-align: center;
+        border-radius: 8px;
     }
 
-    nav ul li a {
-        margin: 0.2rem 0.5rem;
+    .dropdown:not(.active):hover {
+        background-color: rgba(255,255,255,0.15);
+        transition: all 0.5s ease;
     }
+
+    .dropdown-button {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* .dropdown-button:hover {
+        background-color: transparent;
+    } */
+    
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-button {
+    display: flex;
+}
+
+.dropdown-menu {
+    position: absolute;
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    transform-origin: center center;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        transform 40ms ease-out,
+        opacity 40ms ease-out,
+        visibility 0s linear 40ms;
+    z-index: 10;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+.dropdown-menu.open {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+    visibility: visible;
+    transition:
+        transform 120ms ease-out,
+        opacity 120ms ease-out;
+    pointer-events: auto;
+}
+
+
+.dropdown-menu li:first-child {
+    margin-top: 8px;
+}
+
+.dropdown-menu li:last-child {
+    margin-bottom: 8px;
+}
+
+.dropdown-menu li {
+    display: flex;
+    align-items: center;
+    list-style: none;
+}
+
+.dropdown-menu a {
+    width: 100%;
+    color: #333;
+}
+
+nav ul li .dropdown-menu li a:not(.active):hover {
+    background-color: #eeeeee;
+}
+
+.dropdown-menu .active {
+    color: #f4f4f8;
+}
+
+.navbar-icon {
+    filter: invert(81%) sepia(0%) saturate(349%) hue-rotate(302deg) brightness(96%) contrast(87%);
 }

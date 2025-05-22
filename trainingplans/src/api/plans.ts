@@ -227,7 +227,7 @@ export const GetFavoritePlans = async (planParameters: PlanParameters) => {
     const response = await fetch(`http://localhost:7000/gateway/FavoritePlans/get/all?${queryParams.toString()}`, {
         method: "GET",
         headers: {
-            "content-type": "application/json",
+            "Content-Type": "application/json",
         },
         credentials: 'include',
     });

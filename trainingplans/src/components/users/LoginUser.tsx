@@ -1,49 +1,61 @@
-import { LoginUserRequest } from "../../api/interfaces";
-import { useAuthContext } from "../../store/contexts/AuthContext";
-
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuthContext } from "../../store/contexts/AuthContext";
+import { LoginUserRequest } from "../../api/interfaces";
+import { AuthForm } from "./AuthForm";
 
-
-interface Props {  
-    handleLogin: (request: LoginUserRequest) => Promise<{status : number}>;
+interface Props {
+    handleLogin: (request: LoginUserRequest) => Promise<{ status: number }>;
 }
 
-export const LoginUser = ({
-    handleLogin
-}: Props) => {
-    const [password, setPassword] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
+export const LoginUser = ({ handleLogin }: Props) => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
     const { login } = useAuthContext();
 
-    const handleOnOk = async () => {
-        const loginUserRequest = { password, email };
-        const response = await handleLogin(loginUserRequest);
+    const handleSubmit = async () => {
+        const response = await handleLogin({ email, password });
         if (response.status === 200) {
             login();
+            navigate(from, { replace: true });
         }
     };
 
-    return (    
-        <div className="flex items-center justify-center">
-            <div className="flex flex-col h-96 w-1/3 gap-4">
-                        
-                <input className="p-3"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                    placeholder="Пароль"
-                />
-
-                <input className="p-3"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                    placeholder="Адрес электронной почты"
-                />     
-
-                <button className="p-3 bg-blue-950" type="button" onClick={() => handleOnOk()}>
-                    Войти
-                </button>
-
-            </div>
-        </div>
-);
+    return (
+        <AuthForm
+            title="Авторизация"
+            fields={[
+                {
+                    name: "email",
+                    value: email,
+                    placeholder: "Адрес электронной почты",
+                    onChange: setEmail,
+                },
+                {
+                    name: "password",
+                    value: password,
+                    placeholder: "Пароль",
+                    type: "password",
+                    onChange: setPassword,
+                },
+            ]}
+            onSubmit={handleSubmit}
+            submitButtonText="Войти"
+            footer={
+                <span className="text-[#f4f4f8] border-[rgba(204,204,224,0.52)] mt-7 mb-5 font-semibold">
+                    Ещё не зарегистрированы?{" "}
+                    <a
+                        href="/register"
+                        className="text-blue-500 hover:text-blue-400 duration-200 font-semibold"
+                    >
+                        Создать аккаунт
+                    </a>
+                </span>
+            }
+        />
+    );
 };
