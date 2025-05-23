@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Message } from "./Message";
+import { Message as Messages } from "../../api/interfaces";
 import starIcon from '../../assets/star.svg';
 import chooseIcon from '../../assets/choose.svg';
 import { getAllAvailablePlans } from "../../api/plans";
 import { PlanList } from "../plans/PlanList";
 import { Plan } from "../../api/interfaces";
+import { Message } from "./Message";
 
 interface ChatProps {
-    messages: Message[];
+    messages: Messages[];
     chatRoom: string;
     sendMessage: (message: string, plans: Plan[], chatRoom: string) => void;
 }
@@ -17,10 +18,13 @@ export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
     const [plans, setPlans] = useState<Plan[]>([]);
     const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]); 
     const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
-    const messagesEndRef = useRef<HTMLSpanElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView();
+        const container = messagesContainerRef.current;
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
         setSelectedPlans([]);
     }, [messages]);
 
@@ -38,14 +42,10 @@ export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
 
     const handleChoosePlan = (plan: Plan) => {
         setSelectedPlans(prev => {
-
             const isSelected = prev.some(p => p.id === plan.id);
-            
-            if (isSelected) {
-                return prev.filter(p => p.id !== plan.id);
-            } else {
-                return [...prev, plan];
-            }
+            return isSelected
+                ? prev.filter(p => p.id !== plan.id)
+                : [...prev, plan];
         });
     };
 
@@ -55,14 +55,14 @@ export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
                 <span className="text-lg font-semibold text-gray-800">{chatRoom}</span>
             </div>
 
-            <div className="flex flex-col overflow-auto h-96 gap-3 pb-3">
-            {messages.length > 0 && messages.map((message : Message, index) => (
-                <Message messageInfo={message} key={index} />
-            ))}
-            
-                <span ref={messagesEndRef} />
+            <div
+                ref={messagesContainerRef}
+                className="flex flex-col overflow-auto h-96 gap-3 pb-3"
+            >
+                {messages.length > 0 && messages.map((message: Messages, index) => (
+                    <Message messageInfo={message} key={index} />
+                ))}
             </div>
-            
 
             <div className="flex gap-3 mt-4">
                 <input
@@ -80,12 +80,17 @@ export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
                 </button>
                 <button
                     onClick={onChoosePlan}
-                    className="bg-orange-500 text-white p-3 rounded-lg hover:bg-orange-600 transition duration-200"
+                    className="relative bg-orange-500 text-white p-3 rounded-lg hover:bg-orange-600 transition duration-200"
                 >
                     Выбрать план
+                    {selectedPlans.length > 0 && (
+                        <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {selectedPlans.length}
+                        </span>
+                    )}
                 </button>
             </div>
-            {/* Модальное окно для выбора плана */}
+
             {isPlanModalOpen && 
                 <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg shadow-xl w-full h-full flex flex-col">
@@ -109,26 +114,22 @@ export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
                                         >
                                             <img 
                                                 src={chooseIcon} 
-                                                className={`plan-icon plan-choose-icon ${
-                                                    isSelected ? "plan-choose-icon-active" : ""
-                                                }`} 
+                                                className={`plan-icon plan-choose-icon ${isSelected ? "plan-choose-icon-active" : ""}`} 
                                                 alt="Choose" 
                                             />
                                         </button>
-                                        
-                                        {plan.isFavorite ? (
-                                        <button
-                                            className="icon-button"
-                                            type="button"
-                                            title="В избранном"
-                                        >
-                                            <img src={starIcon} 
-                                            className="plan-icon plan-favorite-icon-active" 
-                                            alt="Favorite" 
-                                            />
-                                        </button>
-                                        ) : (
-                                            null
+                                        {plan.isFavorite && (
+                                            <button
+                                                className="icon-button"
+                                                type="button"
+                                                title="В избранном"
+                                            >
+                                                <img 
+                                                    src={starIcon} 
+                                                    className="plan-icon plan-favorite-icon-active" 
+                                                    alt="Favorite" 
+                                                />
+                                            </button>
                                         )}
                                     </>
                                 }}    
@@ -154,6 +155,6 @@ export const Chat = ({ messages, chatRoom, sendMessage }: ChatProps) => {
                     </div>
                 </div>
             }
-    </div>
+        </div>
     );
 };

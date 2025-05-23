@@ -41,6 +41,13 @@ export interface PlansResponse {
     plans: Plan[];
 }
 
+export interface Message {
+  userName: string;
+  message: string;
+  plans: Plan[] | null;
+  sendingDate: string;
+}
+
 export interface PlanParameters {
     pageNumber?: number;
     pageSize?: number;
