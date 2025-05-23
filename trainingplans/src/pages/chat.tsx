@@ -1,33 +1,24 @@
-
-
-import { WaitingRoom } from "../components/chat/WaitingRoom"
-import { Chat } from "../components/chat/Chat"
+import { Chat } from "../components/chat/Chat";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { useState, useEffect } from "react";
-import { Message } from "../components/chat/Message";
-import { Plan } from "../api/interfaces";
-
-// interface Exercise {
-//     id: string,
-//     name: string
-// }
-
-// interface Plan {
-//     id: string,
-//     exercises: Exercise[],
-//     category?: string
-// }
+import { useState, useEffect, FormEvent, MouseEvent } from "react";
+import { Plan, Message as Messages } from "../api/interfaces";
 
 export const ChatPage = () => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [chatRoom, setChatRoom] = useState<string>("");
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<Messages[]>([]);
     const [chatRooms, setChatRooms] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [joinNewChat, setJoinNewChat] = useState<boolean>(false);
+    const [newRoomName, setNewRoomName] = useState<string>("");
 
-    useEffect(() => { // вызывается дважды в StrictMode
+    const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; room: string | null }>({
+        visible: false,
+        x: 0,
+        y: 0,
+        room: null,
+    });
 
+    useEffect(() => {
         const connection = new HubConnectionBuilder()
             .withUrl("http://localhost:7000/gateway/api/chat")
             .withAutomaticReconnect()
@@ -36,16 +27,13 @@ export const ChatPage = () => {
         setConnection(connection);
 
         connection.on("ReceiveMessage", (userName, message, plans, sendingDate) => {
-            //console.log("Получено сообщение:", { userName, message, sendingDate });
-            setMessages(prevMessages => [...prevMessages, { userName, message, plans, sendingDate }]);
+            setMessages(prev => [...prev, { userName, message, plans, sendingDate }]);
         });
 
         const fetchChatRooms = async () => {
             try {
                 await connection.start();
-                console.log(connection.connectionId);
-
-                const rooms: string[] = await connection.invoke("GetChatGroups");
+                const rooms: string[] = await connection.invoke("GetChatRooms");
                 setChatRooms(rooms);
             } catch (error) {
                 console.error("Ошибка загрузки чатов:", error);
@@ -61,36 +49,21 @@ export const ChatPage = () => {
         };
     }, []);
 
-    const joinChat = async (chatRoom: string) => {
+    const joinChat = async (room: string) => {
         if (!connection) return;
-    
         try {
-            const response = await connection.invoke("JoinChat", { chatRoom });
-            
+            const response = await connection.invoke("JoinChat", { chatRoom: room });
             if (response.statusCode === 200) {
-                setChatRoom(chatRoom);
-                setChatRooms((prevRooms) => [...prevRooms, chatRoom]);
-    
-                const previousMessages: Message[] = await connection.invoke("GetPreviousMessages", chatRoom);
+                setChatRoom(room);
+                if (!chatRooms.includes(room)) setChatRooms(prev => [...prev, room]);
+                const previousMessages: Messages[] = await connection.invoke("GetPreviousMessages", room);
                 setMessages(previousMessages);
-                setJoinNewChat(false);
+                setNewRoomName("");
             } else {
-                console.log(response.status);
                 alert("Вы уже состоите в этом чате");
             }
         } catch (error) {
             console.error("Ошибка при присоединении к чату:", error);
-        }
-    };
-    
-
-    const sendMessage = (message: string, plans: Plan[], chatRoom: string) => {
-        if (!connection) return;
-
-        if (message != "" || plans.length != 0) {
-            console.log(message);
-            console.log(plans);
-            connection.invoke("SendMessage", message, plans, chatRoom);
         }
     };
 
@@ -99,88 +72,143 @@ export const ChatPage = () => {
             await connection.invoke("LeaveChat", room);
             setMessages([]);
             setChatRoom("");
-    
-            setChatRooms(prevRooms => prevRooms.filter(r => r !== room));
+            setChatRooms(prev => prev.filter(r => r !== room));
         }
     };
 
-    const switchChatRoom = async (chatRoom: string) => {
+    const switchChatRoom = async (room: string) => {
         if (!connection) return;
-    
         try {
-            setChatRoom(chatRoom);
-    
-            const previousMessages: Message[] = await connection.invoke("GetPreviousMessages", chatRoom);
-    
+            setChatRoom(room);
+            const previousMessages: Messages[] = await connection.invoke("GetPreviousMessages", room);
             setMessages(previousMessages);
-            
         } catch (error) {
             console.error("Ошибка при переключении чата:", error);
         }
     };
-    
-    
-    
+
+    const sendMessage = (message: string, plans: Plan[], chatRoom: string) => {
+        if (connection && (message !== "" || plans.length > 0)) {
+            connection.invoke("SendMessage", message, plans, chatRoom);
+        }
+    };
+
+    const handleJoinSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        if (newRoomName.trim()) joinChat(newRoomName.trim());
+    };
+
+    const handleContextMenu = (event: MouseEvent<HTMLLIElement>, room: string) => {
+        event.preventDefault();
+        setContextMenu({
+            visible: true,
+            x: event.pageX,
+            y: event.pageY,
+            room,
+        });
+    };
+
+    useEffect(() => {
+        const handleClick = () => {
+            if (contextMenu.visible) {
+                setContextMenu({ visible: false, x: 0, y: 0, room: null });
+            }
+        };
+        window.addEventListener("click", handleClick);
+        return () => {
+            window.removeEventListener("click", handleClick);
+        };
+    }, [contextMenu.visible]);
+
+    const handleLeaveFromMenu = () => {
+        if (contextMenu.room) {
+            leaveChat(contextMenu.room);
+            setContextMenu({ visible: false, x: 0, y: 0, room: null });
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="flex w-full max-w-7xl px-6">
-                <div className="w-1/4 bg-gray-200 p-6 rounded-lg shadow-lg mr-6">                    
-                    {chatRooms.length > 0 ? (
-                        <>
-                        <h2 className="text-xl font-semibold text-gray-700 mb-4">Чаты</h2>
-                    <button 
-                        onClick={() => setJoinNewChat(true)}
-                        className="text-blue-500 hover:text-blue-700"
-                    >
-                        Добавить новый чат
-                    </button>  </>               
-                ) : (
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">Войдите в чат, чтобы начать совместную работу</h2>
-                )}
-                    
-                    {isLoading ? (
-                        <p className="text-gray-600">Загрузка...</p>
+            <div className="flex w-full px-[110px]">
+                <div className="w-1/4 h-[80vh] bg-white border border-gray-300 rounded-xl shadow-md mr-6 flex flex-col overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-800">Чаты</h2>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto">
+                        {isLoading ? (
+                            <p className="text-center text-gray-500 mt-4">Загрузка...</p>
+                        ) : chatRooms.length === 0 ? (
+                            <p className="text-center text-gray-500 mt-4">Нет доступных чатов</p>
+                        ) : (
+                            <ul className="divide-y divide-gray-200 relative">
+                                {chatRooms.map((room, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => switchChatRoom(room)}
+                                        onContextMenu={(e) => handleContextMenu(e, room)}
+                                        className={`flex justify-between items-center px-4 py-3 cursor-pointer transition-all hover:bg-gray-100 ${
+                                            room === chatRoom ? "bg-gray-100" : ""
+                                        }`}
+                                    >
+                                        <span className="text-blue-600 font-medium truncate">
+                                            {room}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    <form onSubmit={handleJoinSubmit} className="p-4 border-t border-gray-200">
+                        <input
+                            type="text"
+                            value={newRoomName}
+                            onChange={(e) => setNewRoomName(e.target.value)}
+                            placeholder="Новый чат"
+                            className="w-full mb-2 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md text-sm font-semibold"
+                        >
+                            Войти в чат
+                        </button>
+                    </form>
+                </div>
+
+                <div className="w-3/4 h-[80vh] bg-white border border-gray-300 rounded-xl shadow-md flex items-center justify-center">
+                    {chatRoom ? (
+                        <Chat messages={messages} chatRoom={chatRoom} sendMessage={sendMessage} />
                     ) : (
-                        <ul>
-                            {chatRooms.map((room, index) => (
-                                <li key={index} className="mb-3 flex justify-between items-center">
-                                    <button 
-                                        onClick={() => {
-                                            switchChatRoom(room); 
-                                            setJoinNewChat(false)
-                                        }}
-                                        className="text-blue-500 hover:text-blue-700"
-                                    >
-                                        {room}
-                                    </button>
-                                    <button 
-                                        onClick={() => leaveChat(room)}
-                                        className="text-red-500 hover:text-red-700"
-                                    >
-                                        Покинуть чат
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="text-center text-gray-600 px-4">
+                            Выберите чат или создайте новый, чтобы начать переписку
+                        </div>
                     )}
                 </div>
-                {chatRooms.length > 0 && joinNewChat == false ? (
-                    chatRoom !== "" ? (
-                        <div className="w-3/4">
-                            <Chat 
-                                messages={messages} 
-                                chatRoom={chatRoom} 
-                                sendMessage={sendMessage}
-                            />
-                        </div>
-                    ) : (
-                        null
-                    )
-                ) : (
-                    <WaitingRoom joinChat={joinChat}/>
-                )}
-            </div>          
+
+            </div>
+
+            {contextMenu.visible && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: contextMenu.y,
+                        left: contextMenu.x,
+                        backgroundColor: "white",
+                        border: "1px solid #ccc",
+                        borderRadius: 4,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                        zIndex: 1000,
+                        padding: "8px 12px",
+                        cursor: "pointer",
+                        userSelect: "none",
+                    }}
+                    onClick={handleLeaveFromMenu}
+                >
+                    Покинуть чат
+                </div>
+            )}
         </div>
     );
 };

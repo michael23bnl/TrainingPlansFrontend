@@ -1,14 +1,7 @@
-import { Plan } from "../../api/interfaces";
-
-export interface Message {
-  userName: string;
-  message: string;
-  plans: Plan[] | null;
-  sendingDate: string;
-}
+import { Message as MessageInfo } from "../../api/interfaces";
 
 interface MessageProps {
-  messageInfo: Message;
+  messageInfo: MessageInfo;
 }
 
 export const Message = ({ messageInfo }: MessageProps) => {  
@@ -33,8 +26,6 @@ export const Message = ({ messageInfo }: MessageProps) => {
 		  return "Дата неизвестна";
 		}
 	};
-  //console.log(messageInfo.plans + " PLANS THERE")
-  //console.log(messageInfo.sendingDate + " DATE THERE")
   return (
     <div className="w-full max-w-[80%] mb-4">
       <div className="flex items-center gap-2 mb-1">
