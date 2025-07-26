@@ -3,11 +3,18 @@ import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useState, useEffect, FormEvent, MouseEvent } from "react";
 import { Plan, Message as Messages } from "../api/interfaces";
 
+interface ChatPreview {
+  room: string;
+  lastMessage: string;
+  lastMessageSender: string;
+  sendingDate: string;
+}
+
 export const ChatPage = () => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
-    const [chatRoom, setChatRoom] = useState<string>("");
     const [messages, setMessages] = useState<Messages[]>([]);
-    const [chatRooms, setChatRooms] = useState<string[]>([]);
+    const [chatRoom, setChatRoom] = useState<string>("");
+    const [chatPreviews, setChatPreviews] = useState<ChatPreview[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [newRoomName, setNewRoomName] = useState<string>("");
 
@@ -26,21 +33,45 @@ export const ChatPage = () => {
 
         setConnection(connection);
 
-        connection.on("ReceiveMessage", (userName, message, plans, sendingDate) => {
+        connection.on("ReceiveMessage", (userName, message, plans, sendingDate, room) => {
             setMessages(prev => [...prev, { userName, message, plans, sendingDate }]);
+            setChatPreviews((prev) => {
+                const index = prev.findIndex((p) => p.room === room);
+                const newPreview = { 
+                    room, 
+                    lastMessage: message, 
+                    lastMessageSender: userName,  
+                    sendingDate 
+                };
+                if (index !== -1) {
+                    const newPreviews = [...prev];
+                    newPreviews[index] = newPreview;
+                    return newPreviews;
+                } else {
+                    return [newPreview, ...prev];
+                }
+            });
         });
 
         const fetchChatRooms = async () => {
             try {
                 await connection.start();
-                const rooms: string[] = await connection.invoke("GetChatRooms");
-                setChatRooms(rooms);
+                const roomsWithMessages: Record<string, Messages> = await connection.invoke("GetChatRoomsWithLastMessages");
+
+                const previews: ChatPreview[] = Object.entries(roomsWithMessages).map(([room, last]) => ({
+                    room,
+                    lastMessage: last?.message || "вложения",
+                    lastMessageSender: last?.userName || "",
+                    sendingDate: last?.sendingDate || "",
+                }));
+                setChatPreviews(previews);
             } catch (error) {
                 console.error("Ошибка загрузки чатов:", error);
             } finally {
                 setIsLoading(false);
             }
         };
+
         fetchChatRooms();
 
         return () => {
@@ -55,7 +86,6 @@ export const ChatPage = () => {
             const response = await connection.invoke("JoinChat", { chatRoom: room });
             if (response.statusCode === 200) {
                 setChatRoom(room);
-                if (!chatRooms.includes(room)) setChatRooms(prev => [...prev, room]);
                 const previousMessages: Messages[] = await connection.invoke("GetPreviousMessages", room);
                 setMessages(previousMessages);
                 setNewRoomName("");
@@ -72,7 +102,7 @@ export const ChatPage = () => {
             await connection.invoke("LeaveChat", room);
             setMessages([]);
             setChatRoom("");
-            setChatRooms(prev => prev.filter(r => r !== room));
+            setChatPreviews((prev) => prev.filter((p) => p.room !== room));
         }
     };
 
@@ -128,7 +158,7 @@ export const ChatPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="min-h-screen flex items-center justify-center">
             <div className="flex w-full px-[110px]">
                 <div className="w-1/4 h-[80vh] bg-white border border-gray-300 rounded-xl shadow-md mr-6 flex flex-col overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-200">
@@ -137,36 +167,45 @@ export const ChatPage = () => {
 
                     <div className="flex-1 overflow-y-auto">
                         {isLoading ? (
-                            <p className="text-center text-gray-500 mt-4">Загрузка...</p>
-                        ) : chatRooms.length === 0 ? (
-                            <p className="text-center text-gray-500 mt-4">Нет доступных чатов</p>
+                        <p className="text-center text-gray-500 mt-4">Загрузка...</p>
+                        ) : chatPreviews.length === 0 ? (
+                        <p className="text-center text-gray-500 mt-4">Нет доступных чатов</p>
                         ) : (
-                            <ul className="divide-y divide-gray-200 relative">
-                                {chatRooms.map((room, index) => (
-                                    <li
-                                        key={index}
-                                        onClick={() => switchChatRoom(room)}
-                                        onContextMenu={(e) => handleContextMenu(e, room)}
-                                        className={`flex justify-between items-center px-4 py-3 cursor-pointer transition-all hover:bg-gray-100 ${
-                                            room === chatRoom ? "bg-gray-100" : ""
-                                        }`}
-                                    >
-                                        <span className="text-blue-600 font-medium truncate">
-                                            {room}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
+                        <ul className="divide-y divide-gray-200 relative">
+                            {chatPreviews.map(({ room, lastMessage, lastMessageSender, sendingDate }, index) => (
+                            <li
+                                key={room}
+                                onClick={() => switchChatRoom(room)}
+                                onContextMenu={(e) => handleContextMenu(e, room)}
+                                className={`flex justify-between items-center px-4 py-3 cursor-pointer transition-all hover:bg-gray-100 ${
+                                room === chatRoom ? "bg-gray-100" : ""
+                                }`}
+                            >
+                                <div className="flex flex-col truncate">
+                                <span className="text-blue-600 font-medium truncate">{room}</span>
+                                <span className="text-gray-500 text-sm truncate">
+                                    <strong>{lastMessageSender}:</strong> {lastMessage}
+                                </span>
+                                </div>
+                                {/* <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">{sendingDate}</span> */}
+                            </li>
+                            ))}
+                        </ul>
                         )}
                     </div>
 
                     <form onSubmit={handleJoinSubmit} className="p-4 border-t border-gray-200">
-                        <input
-                            type="text"
+                        <textarea
                             value={newRoomName}
-                            onChange={(e) => setNewRoomName(e.target.value)}
+                            onChange={(e) => {
+                                setNewRoomName(e.target.value);
+                                e.target.style.height = "auto";
+                                e.target.style.height = e.target.scrollHeight + "px";
+                            }}
                             placeholder="Новый чат"
-                            className="w-full mb-2 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            rows={1}
+                            className="resize-none w-full mb-2 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 overflow-hidden"
+                            style={{ maxHeight: '15rem' }}
                         />
                         <button
                             type="submit"

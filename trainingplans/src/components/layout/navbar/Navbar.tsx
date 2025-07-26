@@ -25,7 +25,7 @@ export const Navbar = () => {
         <nav>  
             <div className="nav-container">
                 <div className="nav-container-left">
-                    <div className="title">logo</div>
+                    {/* <div className="title">УТП</div> */}
                     <div className="menu" onClick={() => setMenuOpen(!menuOpen)}>
                         <span></span>
                         <span></span>

@@ -16,7 +16,7 @@ import { PlanConstructorPage } from './pages/plansconstructor.tsx'
 import { RegistrationPage } from './pages/register.tsx'
 import { StatisticsPage } from './pages/statistics.tsx'
 import { HomePage } from './pages/home.tsx'
-import { UnauthorizedPage } from './pages/unauthorized.tsx'
+import { UnauthorizedPage } from './app/unauthorized.tsx'
 
 const router = createBrowserRouter([
   {

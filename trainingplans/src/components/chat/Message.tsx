@@ -27,7 +27,7 @@ export const Message = ({ messageInfo }: MessageProps) => {
 		}
 	};
   return (
-    <div className="w-full max-w-[80%] mb-4">
+    <div className="w-full max-w-[90%] mb-4">
       <div className="flex items-center gap-2 mb-1">
         <span className="text-sm font-medium text-slate-600">
           {messageInfo.userName}
@@ -38,7 +38,7 @@ export const Message = ({ messageInfo }: MessageProps) => {
       </div>
       
       {messageInfo.message && (
-        <div className="p-3 bg-gray-100 rounded-lg shadow-sm mb-2">
+        <div className="p-3 bg-gray-100 rounded-lg shadow-sm mb-2 whitespace-pre-wrap break-words">
           {messageInfo.message}
         </div>
       )}

@@ -10,6 +10,14 @@ html, body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  background:  
+              url('https://www.baltana.com/files/wallpapers-5/White-Background-High-Definition-Wallpaper-16573.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; 
+  background-color: #121420;
+  font-weight: 600;
 }
 
 header {
@@ -29,6 +37,25 @@ main {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* --plan-card-header-cold-color: linear-gradient(#05336e, #121256); */
+  /* (#05336e, #121256) */
+  --plan-card-header-cold-color: linear-gradient(#185f7f, #134e6c);
+  --plan-card-header-warm-color: linear-gradient(#eb800d, #ff5900);
+  --plan-icon-background: rgba(0,0,0,0.5);
+  --plan-done-icon-color: brightness(0) saturate(100%) invert(57%) sepia(80%) saturate(439%) hue-rotate(83deg) brightness(90%) contrast(97%)!important; 
+  --plan-done-icon-hover-color: invert(99%) sepia(1%) saturate(1035%) hue-rotate(210deg) brightness(119%) contrast(100%);
+  --plan-edit-icon-color: invert(92%) sepia(82%) saturate(570%) hue-rotate(304deg) brightness(90%) contrast(90%); 
+  --plan-chosen-icon-color: brightness(0) saturate(100%) invert(53%) sepia(12%) saturate(3299%) hue-rotate(78deg) brightness(101%) contrast(75%)!important;
+  --plan-chosen-icon-hover-color: invert(99%) sepia(1%) saturate(1035%) hue-rotate(210deg) brightness(119%) contrast(100%);
+
+
+  --purple-background: linear-gradient(#a78bfa, #9473f7);
+  --green-background: linear-gradient(#56d24d, #47b140);
+  --red-background: linear-gradient(#f86859, #e74c3c);
+  --header-active-buttons-color: #1d4ed8;
+  /* --header-active-buttons-color: #de6210; */
+  --background-color: #8c8282;
+  
 }
 
 @media (prefers-color-scheme: light) {

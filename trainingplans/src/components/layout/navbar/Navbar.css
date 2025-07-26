@@ -1,5 +1,5 @@
 .active {
-    background-color: #1d4ed8;
+    background-color: var(--header-active-buttons-color);
 }
 
 nav {
