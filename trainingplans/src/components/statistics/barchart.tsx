@@ -72,6 +72,10 @@ export const BarChart = ({ data, colors }: BarChartProps) => {
               display: true,
               text: "Количество упражнений",
             },
+            ticks: {
+              stepSize: 1,
+              precision: 0
+            }
           },
         },
         plugins: {
@@ -90,8 +94,6 @@ export const BarChart = ({ data, colors }: BarChartProps) => {
       chartInstance.current?.destroy();
     };
   }, [data]);
-
-  if (!data || data.length === 0) return <div>Нет данных для отображения</div>;
 
   return (
     <div style={{ width: "100%", maxWidth: "900px", margin: "0 auto" }}>

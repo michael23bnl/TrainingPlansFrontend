@@ -2,11 +2,11 @@ import React, { useEffect, useState, useCallback } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { nanoid } from "nanoid";
-import { Plan, ExerciseRequest } from "../../api/interfaces";
+import { Plan } from "../../api/interfaces";
 import { CategoryInput } from "./CategoryInput";
-import { ExerciseSelectModal } from "./ExerciseSelectModal";
 import { SortableItem } from "./SortableItem";
-
+import { CategorizedExercise } from "../../api/interfaces";
+import { ExerciseSelector } from "./ExerciseSelector";
 interface Props {
   handlePlanCreation: (request: Plan) => void;
   handlePlanUpdate: (id: string, request: Plan) => void;
@@ -14,12 +14,13 @@ interface Props {
   planId: string | null;
   isFavorite?: boolean;
   initialPlanData?: Plan;
-  preparedExercises: Record<string, ExerciseRequest[]>;
+  preparedExercises: Record<string, CategorizedExercise[]>;
 }
 
 interface ExerciseGroup {
   id: string;
   names: string[];
+  category?: string;
 }
 
 export const PlanEditor: React.FC<Props> = ({
@@ -33,7 +34,7 @@ export const PlanEditor: React.FC<Props> = ({
 }) => {
   const [category, setCategory] = useState<string>("");
   const [exerciseGroups, setExerciseGroups] = useState<ExerciseGroup[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [selectingExercise, setSelectingExercise] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export const PlanEditor: React.FC<Props> = ({
         initialPlanData.exercises?.map((e) => ({
           id: nanoid(),
           names: e.name.split(",").map((n) => n.trim()),
+          category: e.muscleGroup || "",
         })) ?? [];
       setExerciseGroups(restored);
     }
@@ -60,7 +62,7 @@ export const PlanEditor: React.FC<Props> = ({
     []
   );
 
-  const handleSelect = (selectedNames: string[]) => {
+  const handleSelect = (selectedNames: string[], selectedCategory: string) => {
     if (selectedNames.length > 0) {
       if (editingIndex !== null) {
         setExerciseGroups((prev) => {
@@ -68,6 +70,7 @@ export const PlanEditor: React.FC<Props> = ({
           updated[editingIndex] = {
             ...updated[editingIndex],
             names: selectedNames,
+            category: selectedCategory,
           };
           return updated;
         });
@@ -75,10 +78,11 @@ export const PlanEditor: React.FC<Props> = ({
       } else {
         setExerciseGroups((prev) => [
           ...prev,
-          { id: nanoid(), names: selectedNames },
+          { id: nanoid(), names: selectedNames, category: selectedCategory },
         ]);
       }
     }
+    setSelectingExercise(false);
   };
 
   const handleDeleteGroup = (id: string) => {
@@ -89,18 +93,19 @@ export const PlanEditor: React.FC<Props> = ({
     const index = exerciseGroups.findIndex((item) => item.id === id);
     if (index !== -1) {
       setEditingIndex(index);
-      setModalOpen(true);
+      setSelectingExercise(true);
     }
   };
 
   const handleSavePlan = () => {
     const exercises = exerciseGroups.map((group) => ({
       name: group.names.join(", "),
+      muscleGroup: group.category || "",
     }));
 
     const plan: Plan = {
       category: category,
-      exercises,
+      exercises: exercises,
     };
 
     if (planId) {
@@ -117,67 +122,76 @@ export const PlanEditor: React.FC<Props> = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-xl m-[110px]">
-        <div className="mb-4">
-          <h2 className="text-2xl font-bold mb-2">
-            {planId ? "Редактирование плана" : "Создание нового плана"}
-          </h2>
-          <CategoryInput
-            initialValue={initialPlanData?.category || ""}
-            onChange={setCategory}
-          />
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-3">Упражнения:</h3>
-          <ul className="space-y-3">
-            {exerciseGroups.map((group, index) => (
-              <SortableItem
-                key={group.id}
-                id={group.id}
-                index={index}
-                group={group.names}
-                moveItem={moveItem}
-                onDelete={() => handleDeleteGroup(group.id)}
-                onEdit={() => handleEditGroup(group.id)}
-              />
-            ))}
-          </ul>
-        </div>
-
-        <div className="mb-6">
-          <button
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md"
-            onClick={() => {
-              setEditingIndex(null);
-              setModalOpen(true);
-            }}
-          >
-            Добавить упражнение
-          </button>
-        </div>
-
-        {modalOpen && (
-          <ExerciseSelectModal
+        {selectingExercise ? (
+          <ExerciseSelector
             preparedExercises={preparedExercises}
             onSelect={handleSelect}
-            onClose={() => {
-              setModalOpen(false);
-              setEditingIndex(null); // сбрасываем редактирование при закрытии
+            onBack={() => {
+              setEditingIndex(null);
+              setSelectingExercise(false);
             }}
             initialNames={
               editingIndex !== null ? exerciseGroups[editingIndex].names : []
             }
+            initialCategory={
+              editingIndex !== null
+                ? exerciseGroups[editingIndex].category || ""
+                : ""
+            }
           />
-        )}
+        ) : (
+          <>
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold mb-2">
+                {planId ? "Редактирование плана" : "Создание нового плана"}
+              </h2>
+              <CategoryInput
+                initialValue={initialPlanData?.category || ""}
+                onChange={setCategory}
+              />
+            </div>
 
-        <div className="text-right">
-          <button
-            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md"
-            onClick={handleSavePlan}
-          >
-            {planId ? "Сохранить изменения" : "Создать план"}
-          </button>
-        </div>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-3">Упражнения:</h3>
+              <ul className="space-y-3">
+                {exerciseGroups.map((group, index) => (
+                  <SortableItem
+                    key={group.id}
+                    id={group.id}
+                    index={index}
+                    group={group.names}
+                    moveItem={moveItem}
+                    onDelete={() => handleDeleteGroup(group.id)}
+                    onEdit={() => handleEditGroup(group.id)}
+                  />
+                ))}
+              </ul>
+            </div>
+
+            <div className="mb-6 text-center">
+              <button
+                className="px-4 py-2 bg-blue-400 hover:bg-blue-600 text-white font-semibold rounded-md"
+                onClick={() => {
+                  setEditingIndex(null);
+                  setSelectingExercise(true);
+                }}
+              >
+                Добавить упражнение
+              </button>
+            </div>
+
+            <div className="bg-gray-300 w-full h-0.5 mb-5"></div>
+
+            <div className="text-center">
+              <button
+                className="px-6 py-2 bg-green-700 hover:bg-green-700 text-white font-bold rounded-md"
+                onClick={handleSavePlan}
+              >
+                {planId ? "Сохранить изменения" : "Создать план"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </DndProvider>
   );

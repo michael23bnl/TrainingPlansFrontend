@@ -7,6 +7,7 @@ import { PlanSearch } from "../components/plans/PlanSearch";
 import { PlanList } from "../components/plans/PlanList";
 import { usePlanCompleteButtons } from '../hooks/usePlanCompleteButtons';
 import { Pagination } from "../components/pagination/pagination";
+import { Link } from 'react-router-dom';
 
 export const CompletedPlansPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -46,7 +47,16 @@ export const CompletedPlansPage = () => {
                             />
                         </button>  
                         </>
-                    )}    
+                    )}  
+                    listEmptyMessage={
+                    <span>
+                      Здесь будут отображаться Ваши выполненные программы тренировок. Отметить план как выполненный
+                      можно в разделе <Link 
+                      className="text-blue-500 hover:text-blue-300 transition-all" 
+                      to="/favoriteplans">избранного</Link> и <Link
+                      className="text-blue-500 hover:text-blue-300 transition-all" 
+                      to="/myplans">Ваших планов</Link>
+                    </span>}   
                 />
                 <Pagination
                     currentPage={pagination.pageNumber}

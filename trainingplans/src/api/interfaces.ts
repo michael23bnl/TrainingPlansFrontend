@@ -16,6 +16,11 @@ export interface Exercise {
     muscleGroup?: string;
 }
 
+export interface CategorizedExercise {
+  exercise: string;
+  categories: string[];
+}
+
 export interface Plan {
     id?: string;
     category?: string;

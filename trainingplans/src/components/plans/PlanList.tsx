@@ -1,15 +1,18 @@
 
 import '../plans/plans.css';
 import { Plan } from "../../api/interfaces";
+import { PlanListEmpty } from './PlanListEmpty';
+import { ReactElement } from 'react';
   
 interface PlanListProps {
     plans: Plan[];
     headerActionButtons?: (plan: Plan) => React.ReactNode;
+    listEmptyMessage: ReactElement;
 }
 
-export const PlanList = ({ plans, headerActionButtons } : PlanListProps) => {
+export const PlanList = ({ plans, headerActionButtons, listEmptyMessage } : PlanListProps) => {
   
-    if (!plans.length) return <div><p>Woops! No plans available at the moment</p></div>;
+    if (!plans.length) return <PlanListEmpty message = {listEmptyMessage} />;
 
     return <>
         <div>

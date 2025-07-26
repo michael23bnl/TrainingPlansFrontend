@@ -10,6 +10,7 @@ import { PlanList } from "../components/plans/PlanList";
 import { usePlanButtons } from "../hooks/usePlanButtons";
 import { usePlanCompleteButtons } from '../hooks/usePlanCompleteButtons';
 import { Pagination } from "../components/pagination/pagination";
+import { Link } from "react-router-dom";
 
 export const MyPlansPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -87,7 +88,13 @@ export const MyPlansPage = () => {
                               )
                         } 
                         </>
-                    )}    
+                    )}  
+                    listEmptyMessage={
+                    <span>
+                      Здесь будут отображаться созданные Вами программы тренировок. <Link
+                      className="text-blue-500 hover:text-blue-300 transition-all" 
+                      to="/plansconstructor">Перейти в редактор</Link>
+                    </span>}  
                 />
                 <Pagination
                   currentPage={pagination.pageNumber}

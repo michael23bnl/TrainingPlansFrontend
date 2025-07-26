@@ -1,4 +1,10 @@
-/* styles/pagination.css */
+
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -6,6 +12,10 @@
     gap: 8px;
     margin: 20px 0;
     flex-wrap: wrap;
+    width: fit-content;
+    background: rgba(0,0,0,0.8);
+    padding: 10px;
+    border-radius: 10px;
   }
   
   .pagination button {

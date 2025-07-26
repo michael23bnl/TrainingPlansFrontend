@@ -10,6 +10,7 @@ import { PlanList } from "../components/plans/PlanList";
 import { usePlanFavoriteButtons } from '../hooks/usePlanFavoriteButtons';
 import { usePlanCompleteButtons } from '../hooks/usePlanCompleteButtons';
 import { Pagination } from "../components/pagination/pagination";
+import { Link } from 'react-router-dom';
 
 export const FavoritePlansPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -40,7 +41,7 @@ export const FavoritePlansPage = () => {
                   return term;
                 });
               }}
-              placeholder="Поиск планов по категориям и упражнениям"
+              placeholder="Поиск планов по тэгам и упражнениям"
             />
             { (loading) ? "" :
             <>
@@ -89,7 +90,13 @@ export const FavoritePlansPage = () => {
                               )
                         } 
                         </>
-                    )}    
+                    )} 
+                    listEmptyMessage={
+                    <span>
+                      Здесь будут отображаться избранные Вами программы тренировок из <Link 
+                      className="text-blue-500 hover:text-blue-300 transition-all" 
+                      to="/preparedplans">каталога</Link>
+                    </span>}
                 />
                 <Pagination
                   currentPage={pagination.pageNumber}

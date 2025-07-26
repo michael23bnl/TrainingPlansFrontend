@@ -42,7 +42,7 @@ export const PreparedPlansPage = () => {
             return term;
           });
         }}
-        placeholder="Поиск планов по категориям и упражнениям"
+        placeholder="Поиск планов по тэгам и упражнениям"
       />
       { (loading) ? "" :
         <>
@@ -82,6 +82,10 @@ export const PreparedPlansPage = () => {
               </button>
             )
           )}       
+          listEmptyMessage={
+          <span>
+            Каталог готовых программ тренировок временно недоступен
+          </span>} 
         />
         <Pagination
           currentPage={pagination.pageNumber}
